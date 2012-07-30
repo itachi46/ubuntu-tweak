@@ -1,0 +1,29 @@
+#!/bin/sh
+
+
+#exit if no file are selected.
+if [ -z "${NAUTILUS_SCRIPT_SELECTED_FILE_PATHS}" ]; then
+	exit
+fi
+
+filename="${NAUTILUS_SCRIPT_SELECTED_FILE_PATHS##*/}" #get file name
+filename=`echo "${filename}" | tr -d "\n"` #remove new line
+
+#create desktop file
+echo "#!/usr/bin/env xdg-open
+
+[Desktop Entry]
+Version=1.0
+Type=Application
+Terminal=false
+Exec=${NAUTILUS_SCRIPT_SELECTED_FILE_PATHS}
+Name=${filename}
+Comment=
+Icon=
+" >> "${filename}".desktop
+
+#open gnome desktop item edit to add logo / edit the desktop file
+gnome-desktop-item-edit "${filename}".desktop
+
+#move file to user/share/applications
+gksudo mv "${filename}".desktop /usr/share/applications/"${filename}".desktop 
